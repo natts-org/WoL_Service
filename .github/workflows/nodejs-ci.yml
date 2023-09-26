@@ -25,7 +25,6 @@ jobs:
           echo "WOL_PORT is not set. Aborting the workflow."
           exit 1
         fi
-      if: ${{ secrets.WOL_PORT != '' }}
 
     - name: Checkout code
       uses: actions/checkout@v2
