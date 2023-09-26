@@ -11,7 +11,7 @@ on:
 jobs:
   build:
 
-    runs-on: aspire
+    runs-on: self-hosted
 
     env:
       WOL_PORT: ${{ secrets.WOL_PORT }}  # Set WOL_PORT to the preset value from GitHub secrets
@@ -39,10 +39,12 @@ jobs:
       run: |
         # Clone the repository on the target machine (GitHub Actions runner)
         cd /srv/deploy
-        git clone https://github.com/Natt-S10/WoL_Service
+        git clone https://github.com/natts-org/WoL_Service
         
         # Change to your app's directory
         cd WoL_Service
+
+        echo ${{ secrets.ENCODED_TARGETS }} | base64 -d > targets.json
 
         # Copy the service file to the appropriate location
         cp wol.service /etc/systemd/system/  # Replace with the actual path
