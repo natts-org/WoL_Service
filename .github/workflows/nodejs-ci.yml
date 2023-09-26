@@ -43,8 +43,6 @@ jobs:
     - name: Deploy
       run: |
         # Clone the repository on the target machine (GitHub Actions runner)
-        pwd
-        cd /srv/deploy
         git clone https://github.com/natts-org/WoL_Service
         
         # Change to your app's directory
