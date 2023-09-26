@@ -21,7 +21,11 @@ jobs:
     steps:
     - name: Set WOL_PORT on host machine
       run: echo "export WOL_PORT=$WOL_PORT" >> $HOME/.bashrc
-      if: ${{ secrets.WOL_PORT }} != ''
+      if: ${{ secrets.WOL_PORT != ''}}
+    
+    - name: abort
+      run: exit 1
+      if: ${{ secrets.WOL_PORT == ''}}
 
     - name: Checkout code
       uses: actions/checkout@v2
