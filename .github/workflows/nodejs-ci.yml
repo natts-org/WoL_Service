@@ -3,29 +3,29 @@ name: Node.js CI
 on:
   push:
     branches:
-      - main  # Adjust to your main branch name
+      - main
   pull_request:
     branches:
-      - main  # Adjust to your main branch name
+      - main
   workflow_dispatch:
 
 jobs:
   build:
 
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     env:
-      WOL_PORT: ${{ secrets.WOL_PORT }}  # Set WOL_PORT to the preset value from GitHub secrets
+      WOL_PORT: ${{ secrets.WOL_PORT }}
       ENCODED_TARGETS: ${{ secrets.ENCODED_TARGETS }}
 
     steps:
-    - name: Set WOL_PORT on host machine
-      run: echo "export WOL_PORT=$WOL_PORT" >> $HOME/.bashrc
-      if: ${{ secrets.WOL_PORT != ''}}
-    
-    - name: abort
-      run: exit 1
-      if: ${{ secrets.WOL_PORT == ''}}
+    - name: Check if WOL_PORT is set
+      run: |
+        if [ -z "$WOL_PORT" ]; then
+          echo "WOL_PORT is not set. Aborting the workflow."
+          exit 1
+        fi
+      if: secrets.WOL_PORT != ''
 
     - name: Checkout code
       uses: actions/checkout@v2
@@ -33,7 +33,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '18'  # Adjust to your Node.js version
+        node-version: '14'  # Adjust to your desired Node.js version
 
     - name: Install dependencies
       run: npm install
@@ -53,15 +53,11 @@ jobs:
         echo $ENCODED_TARGETS | base64 -d > targets.json
 
         # Copy the service file to the appropriate location
-        cp wol.service /etc/systemd/system/  # Replace with the actual path
+        sudo cp wol.service /etc/systemd/system/  # Use 'sudo' to copy to system directory
 
         # Reload systemd to pick up the new service file
-        systemctl daemon-reload
+        sudo systemctl daemon-reload
 
         # Enable and start the service
-        systemctl enable wol.service
-        systemctl start wol.service
-
-
-
-
+        sudo systemctl enable wol.service
+        sudo systemctl start wol.service
